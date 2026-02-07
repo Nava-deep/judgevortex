@@ -77,9 +77,15 @@ LANGUAGE_CONFIG = {
         'run_cmd': 'ruby /code/{filename}'
     },
     'php': {
-        'image': 'php:8.2-cli-alpine',  # Lightweight PHP image
+        'image': 'php:8.2-cli-alpine',
         'file_name': 'main.php',
         'run_cmd': 'php /code/{filename}'
+    },
+    'kotlin': {
+        'image': 'zenika/kotlin:1.4',
+        'file_name': 'main.kt',
+        'compile_cmd': 'kotlinc /code/{filename} -include-runtime -d /code/main.jar',
+        'run_cmd': 'java -jar /code/main.jar'
     },
 }
 
