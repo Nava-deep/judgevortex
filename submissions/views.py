@@ -4,15 +4,28 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from .models import Submission
 from .forms import SubmissionForm
+import os
 from .tasks import process_submission
 from django.views.decorators.http import require_POST
 
 @login_required
 @require_POST
+
 def delete(request, pk):
-    sub = get_object_or_404(Submission, pk=pk, user=request.user)
-    sub.delete()
-    return redirect('list')
+    # 1. Get the submission from the DB
+    submission = get_object_or_404(Submission, pk=pk)
+
+    # 2. Try to delete the actual file (if it exists)
+    try:
+        if submission.code and os.path.isfile(submission.code.path):
+            os.remove(submission.code.path)
+    except Exception as e:
+        print(f"Error deleting file: {e}") # Prints error to logs but doesn't crash
+
+    # 3. Delete the database record (This is the important part)
+    submission.delete()
+
+    return redirect('home')
 
 def landing(request):
     if request.user.is_authenticated:return redirect('list')
