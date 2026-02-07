@@ -130,9 +130,13 @@ def process_submission(submission_id):
 
         # 1. Create a Unique Folder for this submission
         unique_id = uuid.uuid4().hex[:8]
-        # Ensure we use the absolute path from settings
-        base_dir = str(settings.BASE_DIR)
-        host_dir = os.path.join(base_dir, 'temp_submissions', unique_id)
+        # --- CRITICAL FIX: FORCE AZURE PATH ---
+        # We explicitly tell the worker to use the path that matches the Host OS
+        base_path = '/home/azureuser/judgevortex' 
+        host_dir = os.path.join(base_path, 'temp_submissions', unique_id)
+        # --------------------------------------
+
+        # Ensure the folder exists (this will write to your server because of the volume map)
         os.makedirs(host_dir, exist_ok=True)
 
         # 2. Handle Java Class Names
