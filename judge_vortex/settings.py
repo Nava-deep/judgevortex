@@ -128,3 +128,12 @@ CELERY_TIMEZONE = 'UTC'
 LOGIN_REDIRECT_URL = 'list'  # Goes to /dashboard/
 LOGOUT_REDIRECT_URL = 'landing'    # Goes back to the cool landing page
 LOGIN_URL = 'login'
+
+# TRUSTED ORIGINS FOR CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://judgevortex-app.duckdns.org',
+    'https://www.judgevortex-app.duckdns.org',
+]
+
+# TELL DJANGO IT IS BEHIND A PROXY (Crucial for HTTPS)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
