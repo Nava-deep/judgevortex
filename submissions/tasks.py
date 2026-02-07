@@ -85,7 +85,7 @@ LANGUAGE_CONFIG = {
         'image': 'judge-kotlin:latest',
         'file_name': 'main.kt',
         'compile_cmd': 'kotlinc /code/{filename} -include-runtime -d /code/main.jar',
-        'run_cmd': 'java -jar /code/main.jar'
+        'run_cmd': 'java -cp /code/main.jar MainKt' 
     },
 }
 
