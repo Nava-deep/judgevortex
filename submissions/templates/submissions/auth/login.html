@@ -1,0 +1,75 @@
+{% extends 'submissions/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-header bg-dark text-white text-center py-4">
+                <h3 class="fw-bold mb-0"><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
+            </div>
+            
+            <div class="card-body p-4 bg-white">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            <div>Invalid username or password</div>
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                            {{ form.username }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                        Sign In
+                    </button>
+                    
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+            
+            <div class="card-footer text-center bg-light py-3">
+                <small class="text-muted">New to JudgeVortex?</small>
+                <a href="{% url 'register' %}" class="fw-bold text-decoration-none">Create an Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="password"] {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0 0.375rem 0.375rem 0;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    input:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+</style>
+{% endblock %}

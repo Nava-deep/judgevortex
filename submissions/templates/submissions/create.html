@@ -1,0 +1,195 @@
+{% extends 'submissions/base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .lang-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid #e9ecef;
+        height: 100%;
+    }
+    .lang-card:hover {
+        transform: translateY(-3px);
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .lang-card.selected {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+    }
+    .lang-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .code-editor {
+        font-family: 'JetBrains Mono', 'Consolas', monospace;
+        background-color: #282c34; 
+        color: #abb2bf;
+        border: 1px solid #3e4451;
+        font-size: 14px;
+    }
+    .code-editor:focus {
+        background-color: #282c34;
+        color: #fff;
+        border-color: #61afef;
+        box-shadow: none;
+    }
+    #id_language_id { display: none; }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-dark text-white pt-4 pb-3 px-4">
+                <h3><i class="fa-solid fa-code"></i> Code Playground</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold h5">1. Select Language</label>
+                        {{ form.language_id }} 
+                        
+                        <div class="row g-2">
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('python', this)">
+                                    <i class="fa-brands fa-python lang-icon text-primary"></i>
+                                    <div class="fw-bold small">Python</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('cpp', this)">
+                                    <i class="fa-solid fa-c lang-icon text-primary"></i>
+                                    <div class="fw-bold small">C++</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('java', this)">
+                                    <i class="fa-brands fa-java lang-icon text-danger"></i>
+                                    <div class="fw-bold small">Java</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('javascript', this)">
+                                    <i class="fa-brands fa-js lang-icon text-warning"></i>
+                                    <div class="fw-bold small">JavaScript</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('typescript', this)">
+                                    <i class="fa-solid fa-t lang-icon text-info"></i>
+                                    <div class="fw-bold small">TypeScript</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('csharp', this)">
+                                    <i class="fa-brands fa-microsoft lang-icon text-primary"></i>
+                                    <div class="fw-bold small">C#</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('go', this)">
+                                    <i class="fa-brands fa-golang lang-icon text-info"></i>
+                                    <div class="fw-bold small">Go</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('rust', this)">
+                                    <i class="fa-solid fa-gear lang-icon text-secondary"></i>
+                                    <div class="fw-bold small">Rust</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('php', this)">
+                                    <i class="fa-brands fa-php lang-icon text-primary"></i>
+                                    <div class="fw-bold small">PHP</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('ruby', this)">
+                                    <i class="fa-solid fa-gem lang-icon text-danger"></i>
+                                    <div class="fw-bold small">Ruby</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('swift', this)">
+                                    <i class="fa-brands fa-swift lang-icon text-warning"></i>
+                                    <div class="fw-bold small">Swift</div>
+                                </div>
+                            </div>
+
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('c', this)">
+                                    <i class="fa-solid fa-copyright lang-icon text-secondary"></i>
+                                    <div class="fw-bold small">C</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('bash', this)">
+                                    <i class="fa-solid fa-terminal lang-icon text-dark"></i>
+                                    <div class="fw-bold small">Bash</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4 col-md-3 col-lg-2">
+                                <div class="card lang-card text-center p-3" onclick="selectLang('kotlin', this)">
+                                    <i class="fa-brands fa-android lang-icon text-success"></i>
+                                    <div class="fw-bold small">Kotlin</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold h5">2. Source Code</label>
+                        {{ form.source_code }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold h5">3. Custom Input <small class="text-muted fw-normal">(Optional)</small></label>
+                        {{ form.custom_input }}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg py-3 fw-bold shadow-sm">
+                            <i class="fa-solid fa-play"></i> Run Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectLang(id, element) {
+        document.getElementById('id_language_id').value = id;
+        document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const pyCard = document.querySelector("div[onclick=\"selectLang('python', this)\"]");
+        if(pyCard) selectLang('python', pyCard);
+    });
+</script>
+{% endblock %}

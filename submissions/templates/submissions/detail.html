@@ -1,0 +1,70 @@
+{% extends 'submissions/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <a href="{% url 'list' %}" class="text-decoration-none">← Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white fw-bold border-bottom">
+                <i class="fa-solid fa-chart-line text-primary"></i> Metrics
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Runtime</small>
+                        <div class="fs-4 fw-bold text-dark mt-1">
+                            {{ submission.execution_time|default:"0.00" }}s
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Code Size</small>
+                        <div class="fs-4 fw-bold text-secondary mt-1">
+                            {% if submission.memory_used %}
+                                {{ submission.memory_used }} <span class="fs-6 text-muted">Bytes</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if submission.stdout %}
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-success text-white">Standard Output</div>
+            <div class="card-body bg-light code-font p-3">
+                <pre class="mb-0">{{ submission.stdout }}</pre>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if submission.stderr %}
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-danger text-white">Error Log</div>
+            <div class="card-body bg-light text-danger code-font p-3">
+                <pre class="mb-0">{{ submission.stderr }}</pre>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span>Source Code</span>
+                <span class="badge bg-secondary">Lang ID: {{ submission.language_id }}</span>
+            </div>
+            <div class="card-body bg-dark p-0">
+                <textarea class="form-control bg-dark text-white border-0 code-font" rows="20" readonly>{{ submission.source_code }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'submissions/base.html' %}
+
+{% block content %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 100px 0;
+        border-radius: 15px;
+        position: relative;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    .code-float {
+        position: absolute;
+        opacity: 0.1;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.2rem;
+        color: #61dafb;
+        user-select: none;
+    }
+    .c1 { top: 10%; left: 5%; animation: float 6s infinite ease-in-out; }
+    .c2 { bottom: 20%; right: 10%; animation: float 8s infinite ease-in-out; animation-delay: 1s; }
+    .c3 { top: 40%; right: 50%; font-size: 0.8rem; animation: float 10s infinite; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .btn-hero {
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border-radius: 50px;
+        transition: transform 0.2s;
+    }
+    .btn-hero:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="hero-section text-center shadow-lg">
+    <div class="code-float c1">def solve(problem):</div>
+    <div class="code-float c2">cout << "Success";</div>
+    <div class="code-float c3">return True;</div>
+
+    <div class="container hero-content">
+        <h1 class="display-3 fw-bold mb-3">Master the Code.</h1>
+        <p class="lead mb-5 text-light opacity-75">
+            JudgeVortex is the ultimate playground to run, test, and debug your algorithms.<br>
+            Supports Python, C++, Java, Go, and more.
+        </p>
+        
+        <div class="d-flex justify-content-center gap-4">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-hero shadow-lg">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-light btn-hero border-2">
+                <i class="fa-solid fa-user-plus"></i> Register
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="p-4 border rounded shadow-sm bg-white h-100">
+                <i class="fa-solid fa-bolt text-warning display-4 mb-3"></i>
+                <h4>Instant Execution</h4>
+                <p class="text-muted">Powered by Piston API for lightning-fast results without latency.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4 border rounded shadow-sm bg-white h-100">
+                <i class="fa-solid fa-layer-group text-info display-4 mb-3"></i>
+                <h4>Multi-Language</h4>
+                <p class="text-muted">Write in Python, C++, Java, JavaScript, Go, and C with full support.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4 border rounded shadow-sm bg-white h-100">
+                <i class="fa-solid fa-shield-halved text-success display-4 mb-3"></i>
+                <h4>Secure & Isolated</h4>
+                <p class="text-muted">Every submission runs in a secure sandbox environment.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
