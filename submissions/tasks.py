@@ -82,7 +82,7 @@ LANGUAGE_CONFIG = {
         'run_cmd': 'php /code/{filename}'
     },
     'kotlin': {
-        'image': 'zenika/kotlin:1.4',
+        'image': 'jetbrains/kotlin:1.9.23',  
         'file_name': 'main.kt',
         'compile_cmd': 'kotlinc /code/{filename} -include-runtime -d /code/main.jar',
         'run_cmd': 'java -jar /code/main.jar'
