@@ -75,7 +75,12 @@ LANGUAGE_CONFIG = {
         'image': 'ruby:3.2-alpine',
         'file_name': 'main.rb',
         'run_cmd': 'ruby /code/{filename}'
-    }
+    },
+    'php': {
+        'image': 'php:8.2-cli-alpine',  # Lightweight PHP image
+        'file_name': 'main.php',
+        'run_cmd': 'php /code/{filename}'
+    },
 }
 
 def run_docker(image, command, host_dir, input_data=None, timeout=30):
