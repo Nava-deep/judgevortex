@@ -8,7 +8,6 @@ from celery import shared_task
 from django.conf import settings
 from .models import Submission
 
-# 1. UPDATED CONFIG (Using {filename} ensures names match exactly)
 LANGUAGE_CONFIG = {
     'swift': {
         'image': 'swift:latest',
@@ -80,17 +79,17 @@ LANGUAGE_CONFIG = {
 }
 
 def run_docker(image, command, host_dir, input_data=None, timeout=30):
-    # CRITICAL FIX: Docker volume mounts require ABSOLUTE paths
-    abs_host_dir = os.path.abspath(host_dir)
-
+    # This host_dir MUST be the Azure Server path (/home/azureuser/...)
+    # We trust the logic in process_submission to pass the correct path.
+    
     docker_cmd = [
         'docker', 'run', 
-        '-i',             # Interactive (allows passing input)
+        '-i',             # Interactive
         '--rm',           # Delete container after run
-        '--network', 'none', # Disable internet for security
+        '--network', 'none', # Security: No internet
         '--memory', '512m',
-        '-v', f'{abs_host_dir}:/code', # Mount host folder to /code
-        '-w', '/code',    # Set working directory to /code
+        '-v', f'{host_dir}:/code', # Mount the Azure Host Path to /code
+        '-w', '/code',    # Set working directory
         image,
         '/bin/sh', '-c', command
     ]
@@ -110,7 +109,7 @@ def process_submission(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
         
-        # Reset previous results
+        # Reset results
         submission.stdout = ""
         submission.stderr = ""
         submission.result = "Processing"
@@ -128,16 +127,27 @@ def process_submission(submission_id):
 
         config = LANGUAGE_CONFIG[lang].copy()
 
-        # 1. Create a Unique Folder for this submission
+        # 1. Create UNIQUE ID
         unique_id = uuid.uuid4().hex[:8]
-        # --- CRITICAL FIX: FORCE AZURE PATH ---
-        # We explicitly tell the worker to use the path that matches the Host OS
-        base_path = '/home/azureuser/judgevortex' 
-        host_dir = os.path.join(base_path, 'temp_submissions', unique_id)
-        # --------------------------------------
 
-        # Ensure the folder exists (this will write to your server because of the volume map)
-        os.makedirs(host_dir, exist_ok=True)
+        # ---------------------------------------------------------
+        # THE FIX: PATH TRANSLATION
+        # ---------------------------------------------------------
+        
+        # A. Internal Path (Where Python WRITES the file inside the container)
+        # This is usually /app/temp_submissions/xyz
+        internal_dir = os.path.join(settings.BASE_DIR, 'temp_submissions', unique_id)
+        os.makedirs(internal_dir, exist_ok=True)
+
+        # B. Host Path (Where Docker LOOKS for the file on the server)
+        # We manually construct the path to match your Azure server structure
+        # /home/azureuser/judgevortex/temp_submissions/xyz
+        host_base = '/home/azureuser/judgevortex'
+        host_dir = os.path.join(host_base, 'temp_submissions', unique_id)
+
+        print(f"--> [DEBUG] Internal Write Path: {internal_dir}")
+        print(f"--> [DEBUG] External Mount Path: {host_dir}")
+        # ---------------------------------------------------------
 
         # 2. Handle Java Class Names
         user_class = "Main"
@@ -147,41 +157,39 @@ def process_submission(submission_id):
                 user_class = match.group(1)
                 config['file_name'] = f"{user_class}.java"
         
-        # 3. Write Source Code to File
-        file_path = os.path.join(host_dir, config['file_name'])
+        # 3. Write Code to INTERNAL Path
+        file_path = os.path.join(internal_dir, config['file_name'])
         with open(file_path, 'w') as f:
             f.write(submission.source_code)
             
         submission.memory_used = len(submission.source_code.encode('utf-8'))
         
         try:
-            # 4. COMPILATION PHASE
+            # 4. COMPILATION
             if 'compile_cmd' in config:
-                # Format command with the correct filename
                 compile_command = config['compile_cmd'].format(filename=config['file_name'])
                 
+                # We pass 'host_dir' (Azure path) so Docker finds the file
                 c_result = run_docker(config['image'], compile_command, host_dir, input_data=None, timeout=60)
                 
                 if c_result.returncode != 0:
                     submission.result = "Compilation Error"
-                    submission.stderr = c_result.stderr or c_result.stdout # Capture error output
+                    submission.stderr = c_result.stderr or c_result.stdout
                     submission.stdout = ""
                     submission.execution_time = 0
                     submission.status = Submission.Status.COMPLETED
                     submission.save()
-                    shutil.rmtree(host_dir) # Clean up
+                    shutil.rmtree(internal_dir) # Clean up internal path
                     return 
 
-            # 5. EXECUTION PHASE
+            # 5. EXECUTION
             run_command = config['run_cmd'].format(classname=user_class, filename=config['file_name'])
             
             start_time = time.perf_counter()
             r_result = run_docker(config['image'], run_command, host_dir, input_data=user_input, timeout=60)
             end_time = time.perf_counter()
             
-            # Calculate Time
             total_time = end_time - start_time
-            # Subtract overhead (approx 1.5s for Docker startup) but keep it positive
             submission.execution_time = max(round(total_time - 1.5, 3), 0.01)
 
             if r_result.returncode == 0:
@@ -202,9 +210,9 @@ def process_submission(submission_id):
             submission.stderr = str(e)
 
         finally:
-            # Clean up the folder
-            if os.path.exists(host_dir):
-                shutil.rmtree(host_dir)
+            # Clean up using INTERNAL path
+            if os.path.exists(internal_dir):
+                shutil.rmtree(internal_dir)
 
         submission.status = Submission.Status.COMPLETED
         submission.save()
