@@ -25,7 +25,7 @@ def delete(request, pk):
     # 3. Delete the database record (This is the important part)
     submission.delete()
 
-    return redirect('home')
+    return redirect('list')
 
 def landing(request):
     if request.user.is_authenticated:return redirect('list')
