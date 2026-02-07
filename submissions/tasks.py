@@ -82,9 +82,9 @@ LANGUAGE_CONFIG = {
         'run_cmd': 'php /code/{filename}'
     },
     'kotlin': {
-        'image': 'frolvlad/alpine-kotlin:latest',
+        'image': 'amazoncorretto:17-alpine',
         'file_name': 'main.kt',
-        'compile_cmd': 'kotlinc /code/{filename} -include-runtime -d /code/main.jar',
+        'compile_cmd': 'apk add --no-cache kotlin && kotlinc /code/{filename} -include-runtime -d /code/main.jar',
         'run_cmd': 'java -jar /code/main.jar'
     },
 }
