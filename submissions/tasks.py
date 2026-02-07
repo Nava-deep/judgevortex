@@ -32,7 +32,7 @@ LANGUAGE_CONFIG = {
         'run_cmd': 'node /code/{filename}'
     },
     'bash': {
-        'image': 'bash:5.2-alpine',
+        'image': 'bash:alpine',
         'file_name': 'script.sh',
         'run_cmd': 'bash /code/{filename}'
     },
