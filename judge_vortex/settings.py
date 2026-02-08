@@ -23,10 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=qf%66p=$3s-1rs$)ndm7)6#7_y#(h=9^#^$#iq-8a8#q3bogg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ['judgevortex-app.duckdns.org', '20.204.208.95', 'localhost', '127.0.0.1']
 
 # Application definition
 
