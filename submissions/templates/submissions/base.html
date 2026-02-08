@@ -1,59 +1,221 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JudgeVortex</title>
+    <title>JudgeVortex | Code Executor</title>
+    <!-- <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/96/source-code.png"> -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='50' font-size='50' font-weight='bold' fill='white' text-anchor='middle' dy='.35em' font-family='monospace'>&lt;/&gt;</text></svg>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
+    <script>
+        // 1. Theme Initialization (Runs before page render to prevent flash)
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
     <style>
-        body { background-color: #f8f9fa; min-height: 100vh; display: flex; flex-direction: column; }
+        /* --- Color Variables --- */
+        :root {
+            /* Light Mode Defaults */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-color: #f4f7f6;
+            --text-color: #2d3748;
+            --card-bg: #ffffff;
+            --navbar-text: rgba(255, 255, 255, 0.9);
+            --footer-bg: #ffffff;
+            --footer-text: #6c757d;
+            --input-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Overrides (Cyberpunk/Dev Style) */
+            --bg-color: #0f172a; /* Slate 900 */
+            --text-color: #e2e8f0; /* Slate 200 */
+            --card-bg: #1e293b; /* Slate 800 */
+            --navbar-text: #f8fafc;
+            --footer-bg: #1e293b;
+            --footer-text: #94a3b8;
+            --input-bg: #334155;
+            --border-color: #475569;
+        }
+
+        /* --- Global Styles --- */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
         .code-font { font-family: 'JetBrains Mono', monospace; }
-        footer { margin-top: auto; }
+
+        /* --- Navbar --- */
+        .navbar-custom {
+            background: var(--primary-gradient);
+            padding: 15px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #fff !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand i {
+            margin-right: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+            transform: translateY(-2px);
+        }
+
+        /* --- Buttons --- */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(5px);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-glass:hover {
+            background: white;
+            color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        /* --- Theme Toggle Button --- */
+        .theme-toggle-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: #ffd700; /* Gold for sun */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            color: #f0f0f0; /* White/Grey for moon */
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* --- Content & Footer --- */
+        .main-container {
+            flex: 1;
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        footer {
+            margin-top: auto;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            color: var(--footer-text);
+            transition: background-color 0.3s ease;
+        }
+        
+        /* --- Dark Mode Support for Cards --- */
+        [data-theme="dark"] .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: var(--input-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        [data-theme="dark"] .form-control:focus {
+            background-color: var(--input-bg);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'landing' %}">
-                ⚡ JudgeVortex
+            <a class="navbar-brand" href="{% url 'landing' %}">
+                <i class="fa-solid fa-bolt-lightning"></i> JudgeVortex
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="fa-solid fa-bars text-white"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
+                    
+                    <li class="nav-item">
+                        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode">
+                            <i class="fa-solid fa-sun" id="themeIcon"></i>
+                        </button>
+                    </li>
+
                     {% if user.is_authenticated %}
-                        <li class="nav-item me-3">
-                            <span class="nav-link text-white fw-bold">
-                                <i class="fa-solid fa-circle-user"></i> {{ user.username }}
+                        <li class="nav-item ms-3">
+                            <span class="nav-link">
+                                <i class="fa-regular fa-id-badge me-2"></i> {{ user.username }}
                             </span>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item ms-2">
                             <a class="nav-link" href="{% url 'list' %}">Dashboard</a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="btn btn-primary btn-sm fw-bold" href="{% url 'create' %}">+ New Code</a>
+                            <a class="btn btn-glass" href="{% url 'create' %}">
+                                <i class="fa-solid fa-code me-2"></i> New Code
+                            </a>
                         </li>
                         <li class="nav-item ms-3">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="fa-solid fa-power-off"></i> Logout
+                                <button type="submit" class="btn btn-glass btn-sm px-3" style="border-color: rgba(255,100,100,0.5);">
+                                    <i class="fa-solid fa-power-off"></i>
                                 </button>
                             </form>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="{% url 'login' %}">Sign In</a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="btn btn-light text-dark btn-sm fw-bold" href="{% url 'register' %}">Register</a>
+                            <a class="btn btn-glass" href="{% url 'register' %}">Get Started</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -61,17 +223,58 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container main-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </div>
 
-    <footer class="bg-light text-center py-3 mt-5 border-top">
-        <div class="container text-muted small">
-            &copy; 2024 JudgeVortex System
+    <footer>
+        <div class="container text-center">
+            <span class="fw-bold" style="color: #667eea;">⚡ JudgeVortex</span> &copy; 2024
+            <div class="mt-1 small opacity-75">
+                Built for High Performance Coding
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        // Function to update icon based on theme
+        function updateIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        }
+
+        // Set Initial Icon
+        updateIcon(localStorage.getItem('theme') || 'light');
+
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
+    </script>
 </body>
 </html>

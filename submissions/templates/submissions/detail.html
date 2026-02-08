@@ -1,70 +1,229 @@
 {% extends 'submissions/base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <a href="{% url 'list' %}" class="text-decoration-none">← Back to Dashboard</a>
+<style>
+    /* --- Stat Cards --- */
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    [data-theme="dark"] .stat-card {
+        background: #1e293b;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        position: absolute;
+        right: -10px;
+        bottom: -10px;
+        font-size: 4rem;
+        opacity: 0.1;
+        transform: rotate(-15deg);
+    }
+
+    /* --- Status Colors --- */
+    .status-accepted { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+    .status-error { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color: white; }
+    .status-pending { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: white; }
+
+    /* --- Code Window (VS Code Style) --- */
+    .code-window {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: 1px solid #4a4a4a;
+        margin-bottom: 30px;
+    }
+
+    .window-header {
+        background: #1e1e1e;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #333;
+    }
+
+    .window-dots span {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+
+    .window-title {
+        color: #abb2bf;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        margin-left: auto;
+        margin-right: auto;
+        opacity: 0.8;
+    }
+
+    .code-content {
+        background-color: #282c34;
+        color: #abb2bf;
+        padding: 20px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        overflow-x: auto;
+        min-height: 200px;
+    }
+
+    /* --- Terminal Output --- */
+    .terminal-window {
+        background-color: #0f0f0f;
+        border-radius: 10px;
+        border: 1px solid #333;
+        font-family: 'JetBrains Mono', monospace;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    .terminal-header {
+        background: #333;
+        color: #fff;
+        padding: 5px 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .terminal-body {
+        padding: 15px;
+        color: #00ff00; /* Hacker Green */
+        font-size: 0.9rem;
+        min-height: 100px;
+        white-space: pre-wrap;
+    }
+
+    .terminal-error {
+        color: #ff4444; /* Red for errors */
+    }
+
+    /* Back Button */
+    .btn-back {
+        color: var(--text-color);
+        font-weight: 600;
+        transition: 0.3s;
+    }
+    .btn-back:hover {
+        color: #667eea;
+        transform: translateX(-5px);
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{% url 'list' %}" class="btn btn-back text-decoration-none">
+        <i class="fa-solid fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+    <span class="text-muted small">Submission ID: #{{ submission.id|stringformat:"04d" }}</span>
+</div>
+
+<div class="row g-3 mb-5">
+    <div class="col-md-4">
+        <div class="card stat-card h-100 {% if submission.result == 'Accepted' %}status-accepted{% elif 'Error' in submission.result %}status-error{% else %}status-pending{% endif %}">
+            <div class="card-body p-4">
+                <h6 class="text-uppercase mb-2 opacity-75 fw-bold">Result</h6>
+                <h2 class="mb-0 fw-bold">
+                    {% if submission.result == 'Accepted' %}
+                        <i class="fa-solid fa-check-circle me-2"></i>Accepted
+                    {% elif 'Error' in submission.result %}
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Error
+                    {% else %}
+                        <i class="fa-solid fa-spinner fa-spin me-2"></i>Processing
+                    {% endif %}
+                </h2>
+                <i class="fa-solid fa-trophy stat-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <h6 class="text-uppercase text-secondary mb-2 fw-bold" style="font-size: 0.75rem;">Execution Time</h6>
+                <h2 class="mb-0 fw-bold text-dark dark:text-white">
+                    {{ submission.execution_time|default:"0.00" }}<small class="fs-5 text-muted">s</small>
+                </h2>
+                <i class="fa-solid fa-stopwatch stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <h6 class="text-uppercase text-secondary mb-2 fw-bold" style="font-size: 0.75rem;">Language</h6>
+                <h2 class="mb-0 fw-bold text-capitalize">
+                    {{ submission.language_id }}
+                </h2>
+                <div class="text-muted small mt-1">Memory: {{ submission.memory_used|default:"0" }} bytes</div>
+                <i class="fa-solid fa-code stat-icon text-info"></i>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white fw-bold border-bottom">
-                <i class="fa-solid fa-chart-line text-primary"></i> Metrics
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6 border-end">
-                        <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Runtime</small>
-                        <div class="fs-4 fw-bold text-dark mt-1">
-                            {{ submission.execution_time|default:"0.00" }}s
-                        </div>
-                    </div>
-                    
-                    <div class="col-6">
-                        <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Code Size</small>
-                        <div class="fs-4 fw-bold text-secondary mt-1">
-                            {% if submission.memory_used %}
-                                {{ submission.memory_used }} <span class="fs-6 text-muted">Bytes</span>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                    </div>
+    <div class="col-lg-7 mb-4">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-code me-2 text-primary"></i>Source Code</h5>
+        <div class="code-window">
+            <div class="window-header">
+                <div class="window-dots">
+                    <span style="background: #ff5f56;"></span>
+                    <span style="background: #ffbd2e;"></span>
+                    <span style="background: #27c93f;"></span>
                 </div>
+                <div class="window-title">main.{{ submission.language_id }}</div>
             </div>
+            <div class="code-content">{{ submission.source_code }}</div>
         </div>
+    </div>
 
+    <div class="col-lg-5">
+        
         {% if submission.stdout %}
-        <div class="card shadow-sm border-0 mb-3">
-            <div class="card-header bg-success text-white">Standard Output</div>
-            <div class="card-body bg-light code-font p-3">
-                <pre class="mb-0">{{ submission.stdout }}</pre>
+        <div class="mb-4">
+            <h5 class="fw-bold mb-3 text-success"><i class="fa-solid fa-terminal me-2"></i>Standard Output</h5>
+            <div class="terminal-window shadow-sm">
+                <div class="terminal-header">bash - stdout</div>
+                <div class="terminal-body">{{ submission.stdout }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if submission.stderr %}
-        <div class="card shadow-sm border-0 mb-3">
-            <div class="card-header bg-danger text-white">Error Log</div>
-            <div class="card-body bg-light text-danger code-font p-3">
-                <pre class="mb-0">{{ submission.stderr }}</pre>
+        <div class="mb-4">
+            <h5 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-bug me-2"></i>Error Log</h5>
+            <div class="terminal-window shadow-sm" style="border-color: #550000;">
+                <div class="terminal-header bg-danger">bash - stderr</div>
+                <div class="terminal-body terminal-error">{{ submission.stderr }}</div>
             </div>
         </div>
         {% endif %}
-    </div>
 
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <span>Source Code</span>
-                <span class="badge bg-secondary">Lang ID: {{ submission.language_id }}</span>
-            </div>
-            <div class="card-body bg-dark p-0">
-                <textarea class="form-control bg-dark text-white border-0 code-font" rows="20" readonly>{{ submission.source_code }}</textarea>
+        {% if submission.custom_input %}
+        <div class="mb-4 opacity-75">
+            <h6 class="fw-bold mb-2 text-secondary">Input Used:</h6>
+            <div class="p-3 bg-light rounded border code-font small">
+                {{ submission.custom_input|truncatechars:100 }}
             </div>
         </div>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}
