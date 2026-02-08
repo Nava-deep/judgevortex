@@ -30,7 +30,7 @@
     .custom-table {
         width: 100%;
         margin-bottom: 0;
-        color: var(--text-color); /* This ensures text adapts to theme */
+        color: var(--text-color); /* Adaptive Text Color */
     }
 
     .custom-table thead th {
@@ -222,19 +222,19 @@
                                 <span class="fw-bold" style="font-size: 0.85rem;">
                                     <i class="fa-solid fa-bolt text-warning me-1"></i> {{ sub.execution_time }}s
                                 </span>
-                                <span class="text-muted small">
+                                <span class="small opacity-75">
                                     <i class="fa-solid fa-memory me-1"></i> {{ sub.memory_used }} B
                                 </span>
                             </div>
                         {% else %}
-                            <span class="text-muted">-</span>
+                            <span class="opacity-75">-</span>
                         {% endif %}
                     </td>
 
                     <td>
                         <div class="d-flex flex-column">
                             <span class="fw-bold" style="font-size: 0.9rem;">{{ sub.created_at|date:"M d" }}</span>
-                            <span class="text-muted small">{{ sub.created_at|date:"H:i" }}</span>
+                            <span class="small opacity-75">{{ sub.created_at|date:"H:i" }}</span>
                         </div>
                     </td>
 
