@@ -30,7 +30,7 @@
     .custom-table {
         width: 100%;
         margin-bottom: 0;
-        color: var(--text-color);
+        color: var(--text-color); /* This ensures text adapts to theme */
     }
 
     .custom-table thead th {
@@ -207,7 +207,7 @@
                     </td>
 
                     <td>
-                        <span class="code-font text-muted small">
+                        <span class="code-font small opacity-75">
                             {% if sub.result == 'Accepted' %}
                                 {{ sub.stdout|truncatechars:30|default:"(No Output)" }}
                             {% else %}
@@ -305,14 +305,10 @@
 </div>
 
 <script>
-    // Script to pass the correct URL to the Modal Form
     var deleteModal = document.getElementById('deleteModal');
     deleteModal.addEventListener('show.bs.modal', function (event) {
-        // Button that triggered the modal
         var button = event.relatedTarget;
-        // Extract URL from data-delete-url attribute
         var url = button.getAttribute('data-delete-url');
-        // Update the form action
         var form = document.getElementById('deleteForm');
         form.action = url;
     });
