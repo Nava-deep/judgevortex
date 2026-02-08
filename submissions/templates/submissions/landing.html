@@ -2,95 +2,300 @@
 
 {% block content %}
 <style>
-    .hero-section {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: white;
-        padding: 100px 0;
-        border-radius: 15px;
+    /* --- Hero Section --- */
+    .hero-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 30px;
+        padding: 100px 20px;
         position: relative;
         overflow: hidden;
-        margin-top: 20px;
+        color: white;
+        text-align: center;
+        margin-bottom: 60px;
+        box-shadow: 0 20px 40px rgba(118, 75, 162, 0.2);
     }
-    
+
+    /* Floating Background Elements */
+    .hero-bg-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 1;
+        animation: floatShape 20s infinite linear;
+    }
+    .s1 { width: 300px; height: 300px; top: -50px; left: -100px; }
+    .s2 { width: 400px; height: 400px; bottom: -100px; right: -50px; animation-delay: -5s; }
+    .s3 { width: 150px; height: 150px; top: 20%; right: 20%; background: rgba(255, 255, 255, 0.08); animation-duration: 15s; }
+
+    /* Floating Code Snippets */
+    .code-bubble {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: #61dafb; /* React Blue for contrast */
+        border: 1px solid rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        z-index: 2;
+        opacity: 0;
+        animation: floatUp 8s infinite ease-in-out;
+    }
+    .cb1 { top: 70%; left: 10%; animation-delay: 0s; }
+    .cb2 { top: 30%; right: 10%; animation-delay: 3s; color: #f1e05a; /* JS Yellow */ }
+    .cb3 { top: 80%; right: 25%; animation-delay: 5s; color: #e34c26; /* HTML Orange */ }
+
     .hero-content {
         position: relative;
-        z-index: 2;
-    }
-    .code-float {
-        position: absolute;
-        opacity: 0.1;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.2rem;
-        color: #61dafb;
-        user-select: none;
-    }
-    .c1 { top: 10%; left: 5%; animation: float 6s infinite ease-in-out; }
-    .c2 { bottom: 20%; right: 10%; animation: float 8s infinite ease-in-out; animation-delay: 1s; }
-    .c3 { top: 40%; right: 50%; font-size: 0.8rem; animation: float 10s infinite; }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+        z-index: 10;
+        max-width: 800px;
+        margin: 0 auto;
     }
 
-    .btn-hero {
+    .hero-title {
+        font-weight: 800;
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        letter-spacing: -1px;
+        text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    /* Buttons */
+    .btn-hero-primary {
+        background: white;
+        color: #764ba2;
         padding: 15px 40px;
-        font-size: 1.2rem;
-        font-weight: bold;
         border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-hero-primary:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        color: #764ba2;
+        background: #f8f9fa;
+    }
+
+    .btn-hero-secondary {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-left: 15px;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border-color: white;
+    }
+
+    /* --- Feature Cards --- */
+    .feature-card {
+        background: var(--card-bg, #fff);
+        border: none;
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 2rem;
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover .feature-icon-wrapper {
+        transform: rotateY(180deg);
+    }
+
+    /* Icon Colors */
+    .icon-speed { background: rgba(56, 239, 125, 0.1); color: #38ef7d; }
+    .icon-poly { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+    .icon-secure { background: rgba(255, 189, 46, 0.1); color: #ffbd2e; }
+
+    .feature-title {
+        font-weight: 700;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+        color: var(--text-color);
+    }
+
+    .feature-text {
+        color: var(--text-color);
+        opacity: 0.7;
+        line-height: 1.6;
+    }
+
+    /* --- Language Strip --- */
+    .lang-strip {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px;
+        opacity: 0.5;
+        margin-top: 60px;
+        margin-bottom: 40px;
+        filter: grayscale(100%);
+        transition: all 0.5s;
+    }
+    
+    .lang-strip:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+
+    .lang-strip i {
+        font-size: 2.5rem;
         transition: transform 0.2s;
     }
-    .btn-hero:hover {
-        transform: scale(1.05);
+    .lang-strip i:hover { transform: scale(1.2); }
+
+    /* Animations */
+    @keyframes floatShape {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes floatUp {
+        0% { transform: translateY(20px); opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { transform: translateY(-40px); opacity: 0; }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.5rem; }
+        .btn-hero-primary, .btn-hero-secondary { width: 100%; margin: 10px 0 0 0; }
+        .hero-wrapper { padding: 60px 20px; }
     }
 </style>
 
-<div class="hero-section text-center shadow-lg">
-    <div class="code-float c1">def solve(problem):</div>
-    <div class="code-float c2">cout << "Success";</div>
-    <div class="code-float c3">return True;</div>
+<div class="hero-wrapper">
+    <div class="hero-bg-shape s1"></div>
+    <div class="hero-bg-shape s2"></div>
+    <div class="hero-bg-shape s3"></div>
+    
+    <div class="code-bubble cb1">System.out.println("Hello");</div>
+    <div class="code-bubble cb2">import asyncio</div>
+    <div class="code-bubble cb3">func main() {}</div>
 
-    <div class="container hero-content">
-        <h1 class="display-3 fw-bold mb-3">Master the Code.</h1>
-        <p class="lead mb-5 text-light opacity-75">
-            JudgeVortex is the ultimate playground to run, test, and debug your algorithms.<br>
-            Supports Python, C++, Java, Go, and more.
+    <div class="hero-content">
+        <h1 class="hero-title">Compile. Run. Conquer.</h1>
+        <p class="hero-subtitle">
+            Experience the next generation of online code execution. <br>
+            Secure, lightning-fast, and beautiful. Built for developers like you.
         </p>
         
-        <div class="d-flex justify-content-center gap-4">
-            <a href="{% url 'login' %}" class="btn btn-primary btn-hero shadow-lg">
-                <i class="fa-solid fa-right-to-bracket"></i> Login
-            </a>
-            <a href="{% url 'register' %}" class="btn btn-outline-light btn-hero border-2">
-                <i class="fa-solid fa-user-plus"></i> Register
-            </a>
+        <div class="d-flex justify-content-center flex-wrap">
+            {% if user.is_authenticated %}
+                <a href="{% url 'create' %}" class="btn-hero-primary">
+                    <i class="fa-solid fa-code me-2"></i> Start Coding
+                </a>
+                <a href="{% url 'list' %}" class="btn-hero-secondary">
+                    Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-hero-primary">
+                    <i class="fa-solid fa-bolt me-2"></i> Get Started
+                </a>
+                <a href="{% url 'register' %}" class="btn-hero-secondary">
+                    Create Account
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>
 
-<div class="container mt-5">
-    <div class="row text-center">
-        <div class="col-md-4 mb-4">
-            <div class="p-4 border rounded shadow-sm bg-white h-100">
-                <i class="fa-solid fa-bolt text-warning display-4 mb-3"></i>
-                <h4>Instant Execution</h4>
-                <p class="text-muted">Powered by Piston API for lightning-fast results without latency.</p>
+<div class="container text-center">
+    <p class="text-uppercase fw-bold text-muted small tracking-wide">Powering 12+ Technologies</p>
+    <div class="lang-strip">
+        <i class="fa-brands fa-python" title="Python"></i>
+        <i class="fa-brands fa-java" title="Java"></i>
+        <i class="fa-brands fa-js" title="JavaScript"></i>
+        <i class="fa-brands fa-golang" title="Go"></i>
+        <i class="fa-brands fa-rust" title="Rust"></i>
+        <i class="fa-brands fa-php" title="PHP"></i>
+        <i class="fa-brands fa-swift" title="Swift"></i>
+        <i class="fa-solid fa-c" title="C/C++"></i>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-speed">
+                <i class="fa-solid fa-stopwatch"></i>
             </div>
+            <h3 class="feature-title">Instant Execution</h3>
+            <p class="feature-text">
+                Powered by optimized Docker containers and Celery workers. 
+                Your code runs in milliseconds, not seconds.
+            </p>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="p-4 border rounded shadow-sm bg-white h-100">
-                <i class="fa-solid fa-layer-group text-info display-4 mb-3"></i>
-                <h4>Multi-Language</h4>
-                <p class="text-muted">Write in Python, C++, Java, JavaScript, Go, and C with full support.</p>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-poly">
+                <i class="fa-solid fa-layer-group"></i>
             </div>
+            <h3 class="feature-title">Multi-Language</h3>
+            <p class="feature-text">
+                From Python to C++, Java to Go. We support a vast array of 
+                compilers and runtimes out of the box.
+            </p>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="p-4 border rounded shadow-sm bg-white h-100">
-                <i class="fa-solid fa-shield-halved text-success display-4 mb-3"></i>
-                <h4>Secure & Isolated</h4>
-                <p class="text-muted">Every submission runs in a secure sandbox environment.</p>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-secure">
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
+            <h3 class="feature-title">Secure Sandbox</h3>
+            <p class="feature-text">
+                Every submission is isolated in its own ephemeral environment. 
+                Run untrusted code with zero risk to the host.
+            </p>
         </div>
     </div>
 </div>
+
 {% endblock %}

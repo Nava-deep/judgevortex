@@ -1,20 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Page Not Found - JudgeVortex</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | JudgeVortex</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f8f9fa; }
-        h1 { font-size: 50px; color: #dc3545; }
-        p { font-size: 20px; color: #333; }
-        a { text-decoration: none; color: #007bff; font-weight: bold; }
-        a:hover { text-decoration: underline; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 180px;
+            font-weight: 900;
+            letter-spacing: -10px;
+            color: rgba(255, 255, 255, 0.2);
+            background: url('https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif') center no-repeat;
+            -webkit-background-clip: text;
+            background-clip:text;
+            background-size: cover;
+            margin-bottom: -20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        h2 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background: #fff;
+            color: #764ba2;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            background: #f0f0f0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Circles for Background Decoration */
+        .circle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .c1 { width: 200px; height: 200px; top: -50px; left: -50px; }
+        .c2 { width: 300px; height: 300px; bottom: -100px; right: -100px; }
     </style>
 </head>
 <body>
-    <h1>404</h1>
-    <h2>Oops! Page Not Found</h2>
-    <p>The page you are looking for might have been removed or is temporarily unavailable.</p>
-    <br>
-    <a href="/">Go Back to Home</a>
+
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+
+    <div class="container">
+        <h1>404</h1>
+        <h2>Oops! Page Not Found</h2>
+        <p>The code you are looking for has either been deleted, moved, or never existed in this reality.</p>
+        <a href="/" class="btn">Go Back Home</a>
+    </div>
+
 </body>
 </html>
