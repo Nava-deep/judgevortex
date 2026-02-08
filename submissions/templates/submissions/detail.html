@@ -6,15 +6,12 @@
     .stat-card {
         border: none;
         border-radius: 15px;
-        background: white;
+        background: var(--card-bg, #fff); /* Adaptive Background */
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         transition: transform 0.3s ease;
         overflow: hidden;
         position: relative;
-    }
-    
-    [data-theme="dark"] .stat-card {
-        background: #1e293b;
+        color: var(--text-color); /* Adaptive Text */
     }
 
     .stat-card:hover {
@@ -30,10 +27,19 @@
         transform: rotate(-15deg);
     }
 
-    /* --- Status Colors --- */
-    .status-accepted { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
-    .status-error { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color: white; }
-    .status-pending { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: white; }
+    /* --- Status Colors (Added !important to fix Dark Mode override) --- */
+    .status-accepted { 
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important; 
+        color: white !important; 
+    }
+    .status-error { 
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important; 
+        color: white !important; 
+    }
+    .status-pending { 
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important; 
+        color: white !important; 
+    }
 
     /* --- Code Window (VS Code Style) --- */
     .code-window {
@@ -154,9 +160,9 @@
     <div class="col-md-4">
         <div class="card stat-card h-100">
             <div class="card-body p-4">
-                <h6 class="text-uppercase text-secondary mb-2 fw-bold" style="font-size: 0.75rem;">Execution Time</h6>
-                <h2 class="mb-0 fw-bold text-dark dark:text-white">
-                    {{ submission.execution_time|default:"0.00" }}<small class="fs-5 text-muted">s</small>
+                <h6 class="text-uppercase opacity-75 mb-2 fw-bold" style="font-size: 0.75rem;">Execution Time</h6>
+                <h2 class="mb-0 fw-bold" style="color: var(--text-color);">
+                    {{ submission.execution_time|default:"0.00" }}<small class="fs-5 opacity-50">s</small>
                 </h2>
                 <i class="fa-solid fa-stopwatch stat-icon text-primary"></i>
             </div>
@@ -166,11 +172,11 @@
     <div class="col-md-4">
         <div class="card stat-card h-100">
             <div class="card-body p-4">
-                <h6 class="text-uppercase text-secondary mb-2 fw-bold" style="font-size: 0.75rem;">Language</h6>
-                <h2 class="mb-0 fw-bold text-capitalize">
+                <h6 class="text-uppercase opacity-75 mb-2 fw-bold" style="font-size: 0.75rem;">Language</h6>
+                <h2 class="mb-0 fw-bold text-capitalize" style="color: var(--text-color);">
                     {{ submission.language_id }}
                 </h2>
-                <div class="text-muted small mt-1">Memory: {{ submission.memory_used|default:"0" }} bytes</div>
+                <div class="opacity-75 small mt-1">Memory: {{ submission.memory_used|default:"0" }} bytes</div>
                 <i class="fa-solid fa-code stat-icon text-info"></i>
             </div>
         </div>
@@ -217,8 +223,8 @@
 
         {% if submission.custom_input %}
         <div class="mb-4 opacity-75">
-            <h6 class="fw-bold mb-2 text-secondary">Input Used:</h6>
-            <div class="p-3 bg-light rounded border code-font small">
+            <h6 class="fw-bold mb-2">Input Used:</h6>
+            <div class="p-3 rounded border code-font small" style="background: var(--card-bg); color: var(--text-color);">
                 {{ submission.custom_input|truncatechars:100 }}
             </div>
         </div>
