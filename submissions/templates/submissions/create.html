@@ -8,7 +8,9 @@
         border-radius: 20px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         overflow: hidden;
-        background: var(--card-bg, #fff); /* Dark mode compatible */
+        background: var(--card-bg, #fff); /* Adaptive Background */
+        color: var(--text-color); /* Adaptive Text */
+        transition: background-color 0.3s ease, color 0.3s ease;
         animation: fadeIn 0.6s ease-out;
     }
 
@@ -37,7 +39,7 @@
     /* --- Language Cards --- */
     .lang-card {
         cursor: pointer;
-        background: #f8f9fa; /* Light grey default */
+        background: #f8f9fa; /* Light mode default */
         border: 2px solid transparent;
         border-radius: 15px;
         padding: 15px 10px;
@@ -46,8 +48,10 @@
         position: relative;
     }
 
+    /* Dark Mode for Cards */
     [data-theme="dark"] .lang-card {
-        background: #334155; /* Dark mode card */
+        background: #334155; 
+        border-color: #475569;
     }
 
     .lang-card:hover {
@@ -203,7 +207,7 @@
                     {% csrf_token %}
                     
                     <div class="mb-5">
-                        <label class="form-label fw-bold text-secondary text-uppercase small mb-3">
+                        <label class="form-label fw-bold text-uppercase small mb-3 opacity-75">
                             <i class="fa-solid fa-microchip me-1"></i> Select Runtime
                         </label>
                         
@@ -283,7 +287,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-secondary text-uppercase small mb-2">
+                        <label class="form-label fw-bold text-uppercase small mb-2 opacity-75">
                             <i class="fa-solid fa-code me-1"></i> Source Code
                         </label>
                         
@@ -304,11 +308,11 @@
                     </div>
 
                     <div class="mb-5 console-input">
-                        <label class="form-label fw-bold text-secondary text-uppercase small">
+                        <label class="form-label fw-bold text-uppercase small opacity-75">
                             <i class="fa-solid fa-keyboard me-1"></i> STDIN (Input)
                         </label>
                         {{ form.custom_input }}
-                        <div class="form-text small">If your code uses <code>input()</code> or <code>Scanner</code>, type values here.</div>
+                        <div class="form-text small opacity-50">If your code uses <code>input()</code> or <code>Scanner</code>, type values here.</div>
                     </div>
 
                     <div class="d-grid">
