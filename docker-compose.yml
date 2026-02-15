@@ -6,26 +6,27 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
-    ports:
-      - "80:8000"
+    # We REMOVE "80:8000" from web because Nginx will take over port 80 now
+    expose:
+      - "8000"
     env_file:
       - .env
     depends_on:
       - db
       - redis
 
-  # --- ADD THE WORKER HERE ---
-  worker:
-    build: .
-    command: celery -A judge_vortex worker --loglevel=info
+  nginx:
+    image: nginx:alpine
+    container_name: judge_nginx
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
-      - .:/app
-      - /var/run/docker.sock:/var/run/docker.sock 
-    env_file:
-      - .env
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Point this to your actual letsencrypt folder path
+      - ./letsencrypt:/etc/letsencrypt:ro
     depends_on:
-      - db
-      - redis
+      - web
 
   db:
     image: postgres:13
