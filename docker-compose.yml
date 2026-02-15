@@ -17,12 +17,10 @@ services:
   # --- ADD THE WORKER HERE ---
   worker:
     build: .
-    # Replace 'judge_vortex' with the actual name of your Django project folder
     command: celery -A judge_vortex worker --loglevel=info
     volumes:
       - .:/app
-      # Give the worker access to Docker so it can run judge containers
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock 
     env_file:
       - .env
     depends_on:
