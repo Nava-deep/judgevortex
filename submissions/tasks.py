@@ -153,7 +153,7 @@ def process_submission(submission_id):
         # B. Host Path (Where Docker LOOKS for the file on the server)
         # We manually construct the path to match your Azure server structure
         # /home/azureuser/judgevortex/temp_submissions/xyz
-        host_base = '/home/azureuser/judgevortex'
+        host_base = '/Users/navadeepboyana/Documents/judge_vortex'
         host_dir = os.path.join(host_base, 'temp_submissions', unique_id)
 
         print(f"--> [DEBUG] Internal Write Path: {internal_dir}")
