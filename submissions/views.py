@@ -7,10 +7,13 @@ from .forms import SubmissionForm
 import os
 from .tasks import process_submission
 from django.views.decorators.http import require_POST
+from django.views.generic.edit import CreateView
+from django.http import JsonResponse
+from judge_vortex.throttling import DistributedRateThrottle
+from judge_vortex.kafka_producer import send_submission_event
 
 @login_required
 @require_POST
-
 def delete(request, pk):
     # 1. Get the submission from the DB
     submission = get_object_or_404(Submission, pk=pk)
@@ -64,3 +67,30 @@ def create(request):
 def detail(request, pk):
     sub = get_object_or_404(Submission, pk=pk, user=request.user)
     return render(request, 'submissions/detail.html', {'submission': sub})
+
+
+class SubmissionCreateView(CreateView):
+    model = Submission
+    form_class = SubmissionForm
+    template_name = 'submissions/create.html'
+
+    def post(self, request, *args, **kwargs):
+        # 1. SCALE: Check Rate Limit
+        throttler = DistributedRateThrottle()
+        if not throttler.allow_request(request, self):
+            return JsonResponse({'error': 'Thundering Herd Protection: Too many requests!'}, status=429)
+
+        # 2. Standard Form Processing
+        form = self.get_form()
+        if form.is_valid():
+            submission = form.save(commit=False)
+            if request.user.is_authenticated:
+                submission.user = request.user
+            submission.save()
+            
+            # 3. MICROSERVICES: Send to Kafka (Instead of running immediately)
+            send_submission_event(submission.id, submission.source_code, submission.language_id)
+            
+            return JsonResponse({'status': 'queued', 'id': submission.id})
+        
+        return JsonResponse({'error': 'Invalid form'}, status=400)
