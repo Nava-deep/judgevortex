@@ -1,0 +1,18 @@
+# Security: Don't bake keys into the image
+letsencrypt/
+certs/
+
+# Git metadata (makes build slow)
+.git/
+.gitignore
+
+# Python garbage
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments (we install fresh in Docker)
+venv/
+env/
+.env
