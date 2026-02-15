@@ -216,26 +216,9 @@
         box-shadow: 0 10px 20px rgba(56, 239, 125, 0.4);
         color: white;
     }
-    
-    .btn-run:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
 
     #id_language_id { display: none; }
     
-    /* Result Console Styling */
-    #output-console {
-        background: var(--console-bg);
-        color: var(--console-text);
-        padding: 20px;
-        margin: 0;
-        min-height: 150px;
-        white-space: pre-wrap;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 13px;
-    }
-
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -252,7 +235,7 @@
             </div>
 
             <div class="card-body p-4 p-md-5">
-                <form method="post" id="execution-form">
+                <form method="post">
                     {% csrf_token %}
                     
                     <div class="mb-5">
@@ -356,38 +339,16 @@
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-run btn-lg py-3" id="run-btn">
+                        <button type="submit" class="btn btn-run btn-lg py-3">
                             <i class="fa-solid fa-play me-2"></i> Execute Code
                         </button>
                     </div>
                 </form>
-
-                <div id="result-section" style="display: none; margin-top: 40px; animation: fadeIn 0.5s ease;">
-                    <hr class="opacity-10 mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <label class="form-label fw-bold text-uppercase small mb-0 opacity-75">
-                            <i class="fa-solid fa-terminal me-1"></i> Execution Console
-                        </label>
-                        <span id="status-badge" class="badge bg-secondary">Waiting...</span>
-                    </div>
-
-                    <div class="ide-window" style="border-color: #38ef7d;">
-                        <div class="ide-header" style="background: #2d3436;">
-                            <div class="ide-title" style="color: #38ef7d;">Output</div>
-                        </div>
-                        <div class="ide-editor">
-                            <pre id="output-console">Connecting to judge...</pre>
-                        </div>
-                    </div>
-                    
-                    <div id="verdict-display" class="mt-3 fw-bold text-center" style="font-size: 1.2rem;"></div>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
-<input type="hidden" id="django-submission-id" value="{{ submission_id|default:'' }}">
+
 <script>
     const fileExtensions = {
         'python': 'main.py', 'cpp': 'main.cpp', 'java': 'Main.java',
@@ -405,79 +366,12 @@
         document.getElementById('filename-display').innerText = ext;
     }
 
-    // --- REAL-TIME WEBSOCKET LISTENER ---
-    function startLiveTracking(submissionId) {
-        // 1. Reveal Result Section
-        document.getElementById('result-section').style.display = 'block';
-        
-        // 2. Lock the Button
-        const runBtn = document.getElementById('run-btn');
-        runBtn.disabled = true;
-        runBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running...';
-
-        // 3. Connect to WebSocket
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const socket = new WebSocket(protocol + window.location.host + '/ws/submission/' + submissionId + '/');
-
-        socket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            console.log("Judge Update:", data);
-
-            // Update Status Badge
-            if (data.status) {
-                const badge = document.getElementById('status-badge');
-                badge.innerText = data.status;
-                if (data.status === 'Processing') badge.className = 'badge bg-warning text-dark';
-                else if (data.status === 'Completed') badge.className = 'badge bg-success';
-            }
-
-            // Update Console Output
-            if (data.stdout) {
-                document.getElementById('output-console').innerText = data.stdout;
-            }
-
-            // Update Final Verdict
-            if (data.result) {
-                const verdict = document.getElementById('verdict-display');
-                verdict.innerText = "VERDICT: " + data.result;
-                
-                // Color Code Verdict
-                if (data.result === 'Accepted') verdict.className = 'mt-3 fw-bold text-center text-success';
-                else verdict.className = 'mt-3 fw-bold text-center text-danger';
-
-                // Unlock Button & Close Socket
-                runBtn.disabled = false;
-                runBtn.innerHTML = '<i class="fa-solid fa-play me-2"></i> Execute Code';
-                socket.close();
-            }
-        };
-        
-        socket.onclose = function() { console.log("Socket connection closed."); };
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-        // Setup form styling
-        const inputField = document.getElementById('id_custom_input');
-        if(inputField) inputField.classList.add('form-control');
+        document.getElementById('id_custom_input').classList.add('form-control');
         
-        // Auto-select Python
+        // Auto-select Python if nothing is selected
         const pyCard = document.querySelector("div[onclick=\"selectLang('python', this)\"]");
         if(pyCard) selectLang('python', pyCard);
-
-        // --- NEW: Clean Logic to Check for Submission ---
-        const submissionField = document.getElementById('django-submission-id');
-        
-        // Only start tracking if the hidden input has a value (is not empty)
-        if (submissionField && submissionField.value) {
-            console.log("Found active submission:", submissionField.value);
-            startLiveTracking(submissionField.value);
-            
-            // Scroll to the result section
-            const resultSection = document.getElementById('result-section');
-            if (resultSection) {
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
     });
 </script>
 {% endblock %}

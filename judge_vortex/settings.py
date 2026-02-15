@@ -25,31 +25,21 @@ SECRET_KEY = 'django-insecure-=qf%66p=$3s-1rs$)ndm7)6#7_y#(h=9^#^$#iq-8a8#q3bogg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    'judgevortex-app.duckdns.org', 
-    '20.204.208.95', 
-    'localhost', 
-    '127.0.0.1', 
-    'web'  # <--- This is the missing piece that fixes the log error
-]
+ALLOWED_HOSTS = ['judgevortex-app.duckdns.org', '20.204.208.95', 'localhost', '127.0.0.1']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'submissions',
-    'channels',
-    'django_prometheus'
+    'submissions'
 ]
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,21 +48,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware'
 ]
 
 ROOT_URLCONF = 'judge_vortex.urls'
 WSGI_APPLICATION = 'judge_vortex.wsgi.application'
-ASGI_APPLICATION = 'judge_vortex.asgi.application'
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
-    },
-}
 
 TEMPLATES = [
     {
