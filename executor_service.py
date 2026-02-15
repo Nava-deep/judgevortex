@@ -15,7 +15,7 @@ from submissions.models import Submission
 
 # Kafka Config
 conf = {
-    'bootstrap.servers': 'localhost:29092', 
+    'bootstrap.servers': 'kafka:9092',
     'group.id': 'judge-code-executor', 
     'auto.offset.reset': 'earliest'
 }

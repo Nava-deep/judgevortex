@@ -16,7 +16,7 @@ from submissions.models import Submission
 def run_consumer():
     # 2. Kafka Config
     conf = {
-        'bootstrap.servers': 'localhost:29092', # Use 'kafka:9092' if running inside Docker
+        'bootstrap.servers': 'kafka:9092',
         'group.id': 'judge-code-executor',  # Unique ID for execution
         'auto.offset.reset': 'earliest'
     }
