@@ -5,7 +5,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 import submissions.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'judgevortex.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'judge_vortex.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

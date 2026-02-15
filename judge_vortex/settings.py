@@ -57,7 +57,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'judge_vortex.urls'
 WSGI_APPLICATION = 'judge_vortex.wsgi.application'
-ASGI_APPLICATION = 'judgevortex.asgi.application'
+ASGI_APPLICATION = 'judge_vortex.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
