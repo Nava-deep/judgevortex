@@ -1,12 +1,15 @@
 version: '3.8'
 
 services:
+  # --- 1. MONITORING STACK ---
   prometheus:
     image: prom/prometheus
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - judge_network
 
   grafana:
     image: grafana/grafana
@@ -16,13 +19,19 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - judge_network
 
-  # --- 2. MICROSERVICES STACK ---
+  # --- 2. MICROSERVICES & KAFKA STACK ---
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - judge_network
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -37,10 +46,29 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      
+    networks:
+      - judge_network
+
+  # NEW: Dedicated Kafka Consumer (The Code Execution Microservice)
+  judge_consumer:
+    build: .
+    command: python kafka_consumer.py
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - kafka
+      - db
+      - redis
+    networks:
+      - judge_network
+
+  # --- 3. CORE WEB APP ---
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    # UPDATED: Using Daphne for WebSockets/ASGI support
+    command: daphne -b 0.0.0.0 -p 8000 judge_vortex.asgi:application
     volumes:
       - .:/app
     ports:
@@ -50,7 +78,11 @@ services:
     depends_on:
       - db
       - redis
+      - kafka
+    networks:
+      - judge_network
 
+  # --- 4. BACKGROUND TASKS ---
   worker:
     build: .
     command: celery -A judge_vortex worker --loglevel=info
@@ -62,18 +94,28 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - judge_network
 
+  # --- 5. DATA STACK ---
   db:
-    image: postgres:13
+    image: postgres:15 # Upgraded to 15
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=judge_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env
+    networks:
+      - judge_network
 
   redis:
-    image: redis:alpine
+    image: redis:7 # Upgraded to 7
+    networks:
+      - judge_network
+
+networks:
+  judge_network:
+    driver: bridge
 
 volumes:
   postgres_data:
+  grafana_data: # ADDED: Persists your dashboard and password
